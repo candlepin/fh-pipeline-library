@@ -1,4 +1,5 @@
 #!/usr/bin/groovy
+import org.feedhenry.GitHubUtils
 
 /*
  * To be able to use the method exposed here, the following script signatures
@@ -17,6 +18,24 @@ import org.kohsuke.github.GHUser
 import org.kohsuke.github.GitHub
 import org.kohsuke.github.GitHubBuilder
 
+final boolean isTrustedUser(String user, String gitHubCredentialsId) {
+    node {
+        withCredentials([usernamePassword(
+                credentialsId: gitHubCredentialsId,
+                passwordVariable: 'GITHUB_PASSWORD',
+                usernameVariable: 'GITHUB_USERNAME')]) {
+            final GitHub gitHub = new GitHubBuilder()
+                    .withOAuthToken(env.GITHUB_PASSWORD, env.GITHUB_USERNAME)
+                    .build()
+
+            final GHUser ghUser = gitHub.getUser(user)
+            final Set<String> TRUSTED_USERS = ["dependabot", "weblate"]
+
+            return TRUSTED_USERS.contains(ghUser.getName())
+        }
+    }
+}
+
 final boolean isOrgMember(String user, String org, String gitHubCredentialsId) {
     node {
         withCredentials([usernamePassword(
@@ -29,20 +48,26 @@ final boolean isOrgMember(String user, String org, String gitHubCredentialsId) {
 
             final GHUser ghUser = gitHub.getUser(user)
             final GHOrganization ghOrganization = gitHub.getOrganization(org)
+
+//            final def repo = GitHubUtils.ghGetRepo(gitHub, rul)
+//            final def repo = gitHub.getRepository("candlepin")
+//            ghOrganization.
             return ghUser.isMemberOf(ghOrganization)
         }
     }
 }
 
 def call(String trustedOrg='fheng', String gitHubCredentialsId='githubjenkins') {
-    if (!env.CHANGE_AUTHOR) {
-        println "This doesn't look like a GitHub PR, continuing"
-    } else if (!isOrgMember(env.CHANGE_AUTHOR, trustedOrg, gitHubCredentialsId)) {
+//    if (!env.CHANGE_AUTHOR) {
+//        println "This doesn't look like a GitHub PR, continuing"
+//    } else if (isTrustedUser(env.CHANGE_AUTHOR, gitHubCredentialsId)) {
+//        println "${env.CHANGE_AUTHOR} is trusted, continuing"
+//    } else if (!isOrgMember(env.CHANGE_AUTHOR, trustedOrg, gitHubCredentialsId)) {
         input(
             message: "Trusted approval needed for change from ${env.CHANGE_AUTHOR}",
             submitter: 'authenticated'
         )
-    } else {
-        println "${env.CHANGE_AUTHOR} is trusted, continuing"
-    }
+//    } else {
+//        println "${env.CHANGE_AUTHOR} is trusted, continuing"
+//    }
 }
