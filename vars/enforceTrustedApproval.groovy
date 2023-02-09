@@ -35,14 +35,14 @@ final boolean isOrgMember(String user, String org, String gitHubCredentialsId) {
 }
 
 def call(String trustedOrg='fheng', String gitHubCredentialsId='githubjenkins') {
-    if (!env.CHANGE_AUTHOR) {
-        println "This doesn't look like a GitHub PR, continuing"
-    } else if (!isOrgMember(env.CHANGE_AUTHOR, trustedOrg, gitHubCredentialsId)) {
+//    if (!env.CHANGE_AUTHOR) {
+//        println "This doesn't look like a GitHub PR, continuing"
+//    } else if (!isOrgMember(env.CHANGE_AUTHOR, trustedOrg, gitHubCredentialsId)) {
         input(
             message: "Trusted approval needed for change from ${env.CHANGE_AUTHOR}",
             submitter: 'authenticated'
         )
-    } else {
-        println "${env.CHANGE_AUTHOR} is trusted, continuing"
-    }
+//    } else {
+//        println "${env.CHANGE_AUTHOR} is trusted, continuing"
+//    }
 }

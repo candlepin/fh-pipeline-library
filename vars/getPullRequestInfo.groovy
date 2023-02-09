@@ -1,3 +1,5 @@
+import com.cloudbees.groovy.cps.NonCPS
+
 import java.util.regex.Pattern
 
 @NonCPS
