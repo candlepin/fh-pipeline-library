@@ -31,8 +31,8 @@ final boolean isTrustedUser(String user, String gitHubCredentialsId) {
 
             final GHUser ghUser = gitHub.getUser(user)
             final Set<Long> TRUSTED_USERS = [
-                    // https://api.github.com/users/dependabot
-                    27347476L,
+                    // https://api.github.com/users/dependabot[bot]
+                    49699333L,
                     // https://api.github.com/users/weblate
                     1607653L,
             ]
